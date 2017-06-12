@@ -8,57 +8,31 @@ library(magrittr)
 spotify_top_songs <- read_html("https://spotifycharts.com/regional/global/daily/latest") %>%
   html_node("#content > div > div > div > span > table") %>% html_table(trim = TRUE)
 
-<<<<<<< HEAD
-#links <- read_html("https://spotifycharts.com/regional/global/daily/latest") %>% html_node("#content > div > div > div > span > table > tbody > tr:nth-child(1) > td.chart-table-image > a") %>% .[[1]] %>% html_table()
-
-spotify_top_songs
-
-#Add Column Names to the spotify_top_songs    
-=======
 # Add Column Names to the spotify_top_songs    
->>>>>>> 81b8b2ae22099c5847417cfaca1ee313b46b1075
 colnames(spotify_top_songs) = c("NA1","Rank","NA2","Track","Streams")
 
 # Remove empty columns
 spotify_top_songs$NA1 = NULL
 spotify_top_songs$NA2 = NULL
 
-<<<<<<< HEAD
-View(spotify_top_songs)
-
-#Remove "\n" frome every Track
-=======
 # Remove "\n" frome every Track
->>>>>>> 81b8b2ae22099c5847417cfaca1ee313b46b1075
 spotify_top_songs = lapply(spotify_top_songs, function(x){ gsub("\n ", "", x)})
-View(spotify_top_songs)
 
-<<<<<<< HEAD
-#Failed Attempts to Remove WhiteSpaces
-#spotify_top_songs$Track = lapply(spotify_top_songs$Track, function(x){ gsub("                                       ", "", x)})
-
- current_post <- str_c(sprintf("Spotify's Global Picks of the Day- %d : %s , %d : %s, %d : %s ", Rank1, Track1, Rank2, Track2, Rank3, Track3))
- 
- tweet(current_post)
-
-=======
-# !!!!!      TODO: Get rid of whitespace in "Trackname"
-
-# Failed Attempts to Remove WhiteSpaces
-# Spotify_top_songs$Track = lapply(spotify_top_songs$Track, function(x){ gsub("                                       ", "", x)})
+# Get rid of whitespace in "Trackname"
+spotify_top_songs = lapply(spotify_top_songs, function(x){ gsub("\\s+", " ", x)})
 
 # Add links to table
- 
 spotify_link = read_html("https://spotifycharts.com/regional/global/daily/latest") %>%
   html_nodes(xpath = '//*[@id="content"]/div/div/div/span/table/tbody/tr/td[1]/a')
  
 links <- data.frame(url = html_attr(spotify_link, name = "href"))
- 
+
 spotify_top_songs = cbind(spotify_top_songs, links)
+
+spotify_top_songs %>% mutate_if(is.factor, as.character) -> spotify_top_songs
  
 # Twitter Format: Top 3 streamed songs of the day??
  
 current_post_one <- str_c(sprintf("Spotify Global Top 3 Streams for ", as.character(Sys.Date(), ": " )))
  
 tweet(current_post)
->>>>>>> 81b8b2ae22099c5847417cfaca1ee313b46b1075
